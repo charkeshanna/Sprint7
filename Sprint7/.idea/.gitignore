@@ -1,0 +1,14 @@
+# Default ignored files
+/shelf/
+/workspace.xml
+
+# IntelliJ IDEA
+.idea/
+
+# Maven build dirs
+target/
+build/
+.build/
+
+# macOS
+.DS_Store
