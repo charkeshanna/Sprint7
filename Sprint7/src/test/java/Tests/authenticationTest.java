@@ -1,3 +1,5 @@
+package Tests;
+
 import POJO.Courier;
 import POJO.CourierCredentials;
 import io.qameta.allure.Step;
