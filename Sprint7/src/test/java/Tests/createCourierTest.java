@@ -3,7 +3,6 @@ import POJO.CourierCredentials;
 import Steps.CreateCourierSteps;
 import POJO.Courier;
 import Utils.DataGenerator;
-import io.qameta.allure.Step;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import jdk.jfr.Description;
@@ -12,14 +11,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static Steps.CreateCourierSteps.createCourier;
-import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.*;
 
 public class createCourierTest {
 
-    //private String generatedCourierLogin;
-   // private String generatedCourierPassword;
     private String login;
     private String password;
     private boolean isCourierCreated = false;
@@ -56,7 +50,11 @@ public class createCourierTest {
         isCourierCreated = true;
         //авторизация для получения courierId
         CourierCredentials courierCredentials = new CourierCredentials(login, password);
-        courierId = CreateCourierSteps.getCourierId(courierCredentials);
+        //new steps added
+        Response responseAfterLogin = CreateCourierSteps.loginWithLoginAndPassword(courierCredentials);
+        CreateCourierSteps.checkStatusCode(responseAfterLogin, 200);
+        courierId = CreateCourierSteps.getCourierIdAfterSuccessfullLogin(responseAfterLogin);
+
     }
 
     //
@@ -75,7 +73,9 @@ public class createCourierTest {
         isCourierCreated = true;
         //авторизация для получения courierId
         CourierCredentials courierCredentials = new CourierCredentials(login, password);
-        courierId = CreateCourierSteps.getCourierId(courierCredentials);
+        Response responseAfterLogin = CreateCourierSteps.loginWithLoginAndPassword(courierCredentials);
+        CreateCourierSteps.checkStatusCode(responseAfterLogin, 200);
+        courierId = CreateCourierSteps.getCourierIdAfterSuccessfullLogin(responseAfterLogin);
     }
 
     @Test
@@ -95,7 +95,9 @@ public class createCourierTest {
         isCourierCreated = true;
         //авторизация для получения courierId
         CourierCredentials courierCredentials = new CourierCredentials(login, password);
-        courierId = CreateCourierSteps.getCourierId(courierCredentials);
+        Response responseAfterLogin = CreateCourierSteps.loginWithLoginAndPassword(courierCredentials);
+        CreateCourierSteps.checkStatusCode(responseAfterLogin, 200);
+        courierId = CreateCourierSteps.getCourierIdAfterSuccessfullLogin(responseAfterLogin);
 
         //send the same data for the 2nd time
         //создаю курьера с той же парой логин - пароль

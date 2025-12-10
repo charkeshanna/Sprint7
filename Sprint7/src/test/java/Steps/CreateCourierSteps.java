@@ -23,10 +23,7 @@ public class CreateCourierSteps {
                 .header("Content-type", "application/json")
                 .body(courier)
                 .when()
-                .post("/api/v1/courier")
-                .then()
-                .extract()
-                .response();
+                .post("/api/v1/courier");
 
     }
 
@@ -42,7 +39,8 @@ public class CreateCourierSteps {
         assertEquals(expectedValue, actualValue, "Значение по ключу '" + key + "' не совпадает");
     }
 
-    @Step("Получим созданного курьера")
+/*
+    @Step("Получим id созданного курьера")
     public static Integer getCourierId(CourierCredentials courierCredentials) {
         return given()
                 .header("Content-type", "application/json")
@@ -53,6 +51,23 @@ public class CreateCourierSteps {
                 .statusCode(200)
                 .extract()
                 .path("id");
+    }
+    */
+
+
+    //попробую разделить шаги пост запрос с логином и валидация ответа
+    @Step("логин в систему")
+    public static Response loginWithLoginAndPassword(CourierCredentials courierCredentials) {
+        return given()
+                .header("Content-type", "application/json")
+                .body(courierCredentials)
+                .when()
+                .post("/api/v1/courier/login");
+    }
+
+    @Step("получение id после успешного логина")
+    public static Integer getCourierIdAfterSuccessfullLogin(Response response) {
+        return response.path("id");
     }
 
     @Step("Удаление курьера по courierId")
