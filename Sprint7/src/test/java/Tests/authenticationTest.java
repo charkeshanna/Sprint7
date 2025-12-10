@@ -2,180 +2,141 @@ package Tests;
 
 import POJO.Courier;
 import POJO.CourierCredentials;
-import io.qameta.allure.Step;
+import Utils.DataGenerator;
 import io.restassured.RestAssured;
+import io.restassured.response.Response;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import Steps.CreateCourierSteps;
 
-import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.equalTo;
+
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class authenticationTest {
-    private String generatedCourierLogin;
-    private String generatedCourierPassword;
+
     private boolean isCourierCreated = false;
     private int courierId;
-    private String generatedAnyPassword;
+    private String login;
+    private String password;
+
+
 
     @BeforeEach
     public void setUp() {
         RestAssured.baseURI = "http://qa-scooter.praktikum-services.ru";
     }
 
+
     @AfterEach
     public void deleteCourier() {
         if (courierId != 0 && isCourierCreated) {
-            deleteCourierById(courierId);
+            CreateCourierSteps.deleteCourierById(courierId);
         }
     }
-
-    @Step("Генерируем случайный пароль, не связанный с логином")
-    private void generateAnyPassword() {
-        generatedAnyPassword = (int)(Math.random() * 10000) + "wrongPassword";
-    }
-
-    @Step("Создадим курьера ")
-    private void createCourier() {
-        generatedCourierLogin = "login_" + System.currentTimeMillis();
-        generatedCourierPassword = "password" + (int)(Math.random() * 10000);
-
-        Courier courier = new Courier(generatedCourierLogin, generatedCourierPassword, "Test Courier");
-        given()
-                .header("Content-type", "application/json")
-                .body(courier)
-                .when()
-                .post("/api/v1/courier")
-                .then()
-                .statusCode(201);
-
-        isCourierCreated = true;
-    }
-
-    @Step("Логин с верным логином и паролем")
-    private int loginCourier(String login, String password) {
-        CourierCredentials courierCredentials = new CourierCredentials(login, password);
-        return given()
-                .header("Content-type", "application/json")
-                .body(courierCredentials)
-                .when()
-                .post("/api/v1/courier/login")
-                .then()
-                .statusCode(200)
-                .extract()
-                .path("id");
-    }
-
-    @Step("Удаляем курьера по ID {id}")
-    private void deleteCourierById(int id) {
-        given()
-                .header("Content-type", "application/json")
-                .when()
-                .delete("/api/v1/courier/" + String.valueOf(courierId))
-                .then()
-                .statusCode(200);
-
-    }
-
-
-
-
 
 
     @Test
     @DisplayName("Authentication with valid login and password")
     public void loginWithValidCredentialsReturnsIdAndSuccessResponse() {
-        //create courier
-        createCourier();
-        //получаем id после успешного логина
-        courierId = loginCourier(generatedCourierLogin, generatedCourierPassword);
+        //Preconditions: create courier
+        login = DataGenerator.generatedCourierLogin();
+        password = DataGenerator.generateCourierPassword();
+        CreateCourierSteps.addCourierReturnsSuccessResponse(login, password);
 
+        //залогинемся
+        CourierCredentials courierCredentials = new CourierCredentials(login, password);
+        //получим респонс
+        Response response = CreateCourierSteps.loginWithLoginAndPassword(courierCredentials);
+        //сравнив статус код
+        CreateCourierSteps.checkStatusCode(response, 200);
+        //вытянем courierID
+        courierId = CreateCourierSteps.getCourierIdAfterSuccessLogin(response);
+        isCourierCreated = true;
         assertNotNull(courierId, "ID не должен быть NULL");
         assertTrue(courierId > 0, "Id должен быть больше 0");
     }
 
+
+
     @Test
     @DisplayName("Login with not existing login")
     public void loginWithWrongLoginReturnsNotFoundError() {
-        String randomLogin = "non_existing_" + System.currentTimeMillis();
-        String randomPassword = "anyPassword";
+        String randomLogin = DataGenerator.generatedCourierLogin();
+        String randomPassword = DataGenerator.generateCourierPassword();
+
         CourierCredentials courierCredentials = new CourierCredentials(randomLogin, randomPassword);
-        given()
-                .header("Content-type", "application/json")
-                .body(courierCredentials)
-                .when()
-                .post("/api/v1/courier/login")
-                .then()
-                .statusCode(404)
-                .and()
-                .body("message", equalTo("Учетная запись не найдена"));
+        //получим респонс
+        Response response = CreateCourierSteps.loginWithLoginAndPassword(courierCredentials);
+        //сравнив статус код
+        CreateCourierSteps.checkStatusCode(response, 404);
+        CreateCourierSteps.checkResponseValue(response, "message", "Учетная запись не найдена");
+
     }
 
     @Test
     @DisplayName("Login with invalid password")
     public void loginWithWrongPasswordReturnsNotFoundError() {
-        //create new courier
-        createCourier();
-        //получили верный id при успешном логине
-        courierId = loginCourier(generatedCourierLogin, generatedCourierPassword);
-        //сгенерируем неправильный пароль
-        generateAnyPassword();
+        //Preconditions: create courier
+        login = DataGenerator.generatedCourierLogin();
+        password = DataGenerator.generateCourierPassword();
+        CreateCourierSteps.addCourierReturnsSuccessResponse(login, password);
+        isCourierCreated=true;
 
+        //залогинемся
+        CourierCredentials courierCredentials = new CourierCredentials(login, password);
+        //получим респонс
+        Response response = CreateCourierSteps.loginWithLoginAndPassword(courierCredentials);
+        //получим id
+        courierId = CreateCourierSteps.getCourierIdAfterSuccessLogin(response);
+
+        //Сам тест
+        //сгенерируем новый пароль
+        String wrongPassword = DataGenerator.generateCourierPassword();
         //залогинимся с неправильным паролем
-        CourierCredentials courierCredentialsWrong = new CourierCredentials(generatedCourierLogin, generatedAnyPassword);
+        CourierCredentials courierCredentialsWrong = new CourierCredentials(login, wrongPassword);
+        Response responseAfterLogin = CreateCourierSteps.loginWithLoginAndPassword(courierCredentialsWrong);
+        CreateCourierSteps.checkStatusCode(responseAfterLogin,404);
+        CreateCourierSteps.checkResponseValue(responseAfterLogin, "message", "Учетная запись не найдена");
 
-        given()
-                .header("Content-type", "application/json")
-                .body(courierCredentialsWrong)
-                .when()
-                .post("/api/v1/courier/login")
-                .then()
-                .statusCode(404)
-                .and()
-                .body("message", equalTo("Учетная запись не найдена"));
     }
 
     @Test
     @DisplayName("Login without password")
     public void loginWithoutPasswordReturnsBadRequestError() {
-        //create new courier
-        createCourier();
-        //получим id при успешном логине
-        courierId = loginCourier(generatedCourierLogin, generatedCourierPassword);
+        //Preconditions: create courier
+        login = DataGenerator.generatedCourierLogin();
+        password = DataGenerator.generateCourierPassword();
+        CreateCourierSteps.addCourierReturnsSuccessResponse(login, password);
+        isCourierCreated=true;
+
+        //залогинемся
+        CourierCredentials courierCredentials = new CourierCredentials(login, password);
+        //получим респонс
+        Response response = CreateCourierSteps.loginWithLoginAndPassword(courierCredentials);
+        //получим id
+        courierId = CreateCourierSteps.getCourierIdAfterSuccessLogin(response);
 
         //login without  password
-        CourierCredentials courierCredentials = new CourierCredentials(generatedCourierLogin, null);
+        CourierCredentials courierCredentialsNoPassword = new CourierCredentials(login, null);
+        Response responseAfterLogin = CreateCourierSteps.loginWithLoginAndPassword(courierCredentialsNoPassword);
+        CreateCourierSteps.checkStatusCode(responseAfterLogin,400);
+        CreateCourierSteps.checkResponseValue(responseAfterLogin, "message", "Недостаточно данных для входа");
 
-        given()
-                .header("Content-type", "application/json")
-                .body(courierCredentials)
-                .when()
-                .post("/api/v1/courier/login")
-                .then()
-                .statusCode(400)//Проверить еще раз - падает 504 ошибка
-                .and()
-                .body("message", equalTo("Недостаточно данных для входа"));
     }
 
     @Test
     @DisplayName("Login without login")
     public void loginWithoutLoginReturnsBadRequestError() {
-        generateAnyPassword();
+        password = DataGenerator.generateCourierPassword();
         //login without login
-        CourierCredentials courierCredentials = new CourierCredentials(null, generatedAnyPassword);
+        CourierCredentials courierCredentials = new CourierCredentials(null, password);
+        Response responseAfterLogin = CreateCourierSteps.loginWithLoginAndPassword(courierCredentials);
+        CreateCourierSteps.checkStatusCode(responseAfterLogin,400);
+        CreateCourierSteps.checkResponseValue(responseAfterLogin, "message", "Недостаточно данных для входа");
 
-        given()
-                .header("Content-type", "application/json")
-                .body(courierCredentials)
-                .when()
-                .post("/api/v1/courier/login")
-                .then()
-                .statusCode(400)
-                .and()
-                .body("message", equalTo("Недостаточно данных для входа"));
     }
 
 }

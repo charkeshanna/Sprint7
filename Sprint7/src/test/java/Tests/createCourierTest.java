@@ -53,7 +53,7 @@ public class createCourierTest {
         //new steps added
         Response responseAfterLogin = CreateCourierSteps.loginWithLoginAndPassword(courierCredentials);
         CreateCourierSteps.checkStatusCode(responseAfterLogin, 200);
-        courierId = CreateCourierSteps.getCourierIdAfterSuccessfullLogin(responseAfterLogin);
+        courierId = CreateCourierSteps.getCourierIdAfterSuccessLogin(responseAfterLogin);
 
     }
 
@@ -75,7 +75,7 @@ public class createCourierTest {
         CourierCredentials courierCredentials = new CourierCredentials(login, password);
         Response responseAfterLogin = CreateCourierSteps.loginWithLoginAndPassword(courierCredentials);
         CreateCourierSteps.checkStatusCode(responseAfterLogin, 200);
-        courierId = CreateCourierSteps.getCourierIdAfterSuccessfullLogin(responseAfterLogin);
+        courierId = CreateCourierSteps.getCourierIdAfterSuccessLogin(responseAfterLogin);
     }
 
     @Test
@@ -97,7 +97,7 @@ public class createCourierTest {
         CourierCredentials courierCredentials = new CourierCredentials(login, password);
         Response responseAfterLogin = CreateCourierSteps.loginWithLoginAndPassword(courierCredentials);
         CreateCourierSteps.checkStatusCode(responseAfterLogin, 200);
-        courierId = CreateCourierSteps.getCourierIdAfterSuccessfullLogin(responseAfterLogin);
+        courierId = CreateCourierSteps.getCourierIdAfterSuccessLogin(responseAfterLogin);
 
         //send the same data for the 2nd time
         //создаю курьера с той же парой логин - пароль

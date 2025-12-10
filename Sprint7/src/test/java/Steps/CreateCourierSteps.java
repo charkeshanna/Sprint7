@@ -6,15 +6,10 @@ import io.qameta.allure.Step;
 import io.restassured.response.Response;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-
 import static io.restassured.RestAssured.given;
 
 public class CreateCourierSteps {
-    public String generatedCourierLogin;
-    public String generatedCourierPassword;
-    private boolean isCourierCreated = false;
+
 
     @Step("Создадим курьера ")
     public static Response createCourier(Courier courier) {
@@ -24,7 +19,6 @@ public class CreateCourierSteps {
                 .body(courier)
                 .when()
                 .post("/api/v1/courier");
-
     }
 
     @Step("проверим статус код = {expectedCode}")
@@ -66,7 +60,7 @@ public class CreateCourierSteps {
     }
 
     @Step("получение id после успешного логина")
-    public static Integer getCourierIdAfterSuccessfullLogin(Response response) {
+    public static Integer getCourierIdAfterSuccessLogin(Response response) {
         return response.path("id");
     }
 
@@ -81,6 +75,42 @@ public class CreateCourierSteps {
 
     }
 
+
+    @Step("Просто успешное добавление курьера (без айди)")
+    public static Response addCourierReturnsSuccessResponse(String login, String password) {
+            Courier courier = new Courier(login, password, null);
+            Response response = createCourier(courier);
+            checkStatusCode(response, 201);
+            return response;
+    }
+
+    @Step("более высокоуровненвый - создает курьера, убеждается, что создался и затем логинимся чтобы получить id")
+    public static Integer addCourierAndGetCourierId(String login, String password) {
+        Courier courier = new Courier(login, password, null);
+        Response response = createCourier(courier);
+        checkStatusCode(response, 201);
+        CourierCredentials courierCredentials = new CourierCredentials(login,password);
+        Response responseAfterLogin = loginWithLoginAndPassword(courierCredentials);
+        return getCourierIdAfterSuccessLogin(responseAfterLogin);
+    }
+
+/*
+    @Step("Создадим курьера ")
+    private void createCourier() {
+        generatedCourierLogin = "login_" + System.currentTimeMillis();
+        generatedCourierPassword = "password" + (int)(Math.random() * 10000);
+
+        Courier courier = new Courier(generatedCourierLogin, generatedCourierPassword, "Test Courier");
+        given()
+                .header("Content-type", "application/json")
+                .body(courier)
+                .when()
+                .post("/api/v1/courier")
+                .then()
+                .statusCode(201);
+
+        isCourierCreated = true;
+    }*/
 
     /*@Step("Генерируем пару логин - пароль")
     public void generateCredentials() {
@@ -117,4 +147,29 @@ public class CreateCourierSteps {
     }
 
      */
+        /*
+    @Step("Логин с верным логином и паролем")
+    private int loginCourier(String login, String password) {
+        CourierCredentials courierCredentials = new CourierCredentials(login, password);
+        return given()
+                .header("Content-type", "application/json")
+                .body(courierCredentials)
+                .when()
+                .post("/api/v1/courier/login")
+                .then()
+                .statusCode(200)
+                .extract()
+                .path("id");
+    }*/
+    /*
+    @Step("Удаляем курьера по ID {id}")
+    private void deleteCourierById(int id) {
+        given()
+                .header("Content-type", "application/json")
+                .when()
+                .delete("/api/v1/courier/" + String.valueOf(courierId))
+                .then()
+                .statusCode(200);
+
+    }*/
 }
