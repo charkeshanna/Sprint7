@@ -13,7 +13,7 @@ public class CreateOrderSteps {
 
     //проверим правильно создание объекта
     @Step("Проверяем правильное создание объекта")
-    public static void validateOrderFields(Order order,
+    public void validateOrderFields(Order order,//убрала static
                                            String firstName, String lastName,
                                            String address, String metroStation,
                                            String phone, int rentTime,
@@ -30,7 +30,7 @@ public class CreateOrderSteps {
         assertEquals(color, order.getColor());
     }
     @Step("Отправление запрос на создание заказа")
-    public static Response sendPostRequestToCreateOrder(Order order) {
+    public  Response sendPostRequestToCreateOrder(Order order) {//static removed
         return given()
                 .header("Content-type", "application/json")
                 .body(order)
@@ -38,26 +38,26 @@ public class CreateOrderSteps {
                 .post("/api/v1/orders");
     }
     @Step("Проверяем код сообщения response - {expectedCode}")
-    public static void checkStatusCode(Response response, int expectedCode) {
+    public  void checkStatusCode(Response response, int expectedCode) {//static removed
         int actualCode = response.getStatusCode();
         assertEquals(expectedCode, actualCode, "Статус-код не совпадает!");
     }
     @Step("Проверяем наличие track number")
-    public static void checkTrackExists(Response response) {
+    public  void checkTrackExists(Response response) {//static removed
         Integer track = response.jsonPath().getInt("track"); // получаем как Integer
         assertNotNull(track, "Track отсутствует в ответе"); // проверяем, что поле есть
         assertTrue(track > 0, "Track должен быть положительным числом"); // опционально, что число > 0
     }
 
-    @Step("Получаем track number")
-    public static Integer getOrderTrackAfterSuccessAddition(Response response) {
+    @Step("Получаем track number")//static removed
+    public  Integer getOrderTrackAfterSuccessAddition(Response response) {
         return response.path("track");
     }
 
     //так как сейчас нет цели проверять нормальную работу отмены заказа, в более подробные проверки
     //здесь я не лезу
     @Step("Отменяем заказ после создания")
-    public static void cancelOrderAfterSuccessCreation(int track) {
+    public  void cancelOrderAfterSuccessCreation(int track) {//static removed
         given()
                 .header("Content-type", "application/json")
                 .queryParam("track", track)

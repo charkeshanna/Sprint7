@@ -16,9 +16,11 @@ public class CreateCourierTest {
 
     private String login;
     private String password;
+    CreateCourierSteps createCourierSteps;
 
     @BeforeEach
     public void setUp() {
+        createCourierSteps = new CreateCourierSteps();
         RestAssured.baseURI = "http://qa-scooter.praktikum-services.ru";
     }
 
@@ -27,9 +29,9 @@ public class CreateCourierTest {
     @AfterEach
     public void tearDown() {
         CourierCredentials courierCredentials = new CourierCredentials(login, password);
-        int courierId = CreateCourierSteps.getCourierIDafterSuccessLogin(courierCredentials);
+        int courierId = createCourierSteps.getCourierIDafterSuccessLogin(courierCredentials);
         if (courierId != 0) {
-            CreateCourierSteps.deleteCourierById(courierId);
+            createCourierSteps.deleteCourierById(courierId);
         }
     }
 
@@ -37,57 +39,56 @@ public class CreateCourierTest {
 
     @Test
     @DisplayName("Check correct response code and text after adding a courier with all fields filled")
-    @Description("Basic test for /api/v1/courier endpoint")
     public void createCourierWithRequiredAndOptionalFieldsReturnsSuccessResponse() {
         //генерирую логин и пароль
         login = DataGenerator.generateCourierLogin();
         password = DataGenerator.generateCourierPassword();
         //создаю курьера
         Courier courier = new Courier(login, password, "firstname" + login);
-        Response response = CreateCourierSteps.createCourier(courier);
+        Response response = createCourierSteps.createCourier(courier);
         //проверяю ответ
-        CreateCourierSteps.checkStatusCode( response, 201);
-        CreateCourierSteps.checkResponseValue(response, "ok", true);
+        createCourierSteps.checkStatusCode( response, 201);
+        createCourierSteps.checkResponseValue(response, "ok", true);
 
     }
 
-    //
+
     @Test
+    @DisplayName("Check correct response code and text after adding a courier with only required fields filled")
     public void createCourierWithOnlyRequiredFields() {
         login = DataGenerator.generateCourierLogin();
         password = DataGenerator.generateCourierPassword();
         //создаю курьера
         Courier courier = new Courier(login, password, null);
-        Response response = CreateCourierSteps.createCourier(courier);
+        Response response = createCourierSteps.createCourier(courier);
         //проверяю ответ
-        CreateCourierSteps.checkStatusCode( response, 201);
-        CreateCourierSteps.checkResponseValue(response, "ok", true);
+        createCourierSteps.checkStatusCode( response, 201);
+        createCourierSteps.checkResponseValue(response, "ok", true);
 
 
     }
 
     @Test
     @DisplayName("Second creation of the courier with the same login")
-    @Description("Trying to add a courier with the same login as an already added one")
     public void addCourierWithTheSameLoginReturnsConflictResponse(){
         login = DataGenerator.generateCourierLogin();
         password = DataGenerator.generateCourierPassword();
         //создаю курьера
         Courier courier = new Courier(login, password, "firstname" + login);
-        Response response = CreateCourierSteps.createCourier(courier);
+        Response response = createCourierSteps.createCourier(courier);
         //проверяю ответ
-        CreateCourierSteps.checkStatusCode( response, 201);
-        CreateCourierSteps.checkResponseValue(response, "ok", true);
+        createCourierSteps.checkStatusCode( response, 201);
+        createCourierSteps.checkResponseValue(response, "ok", true);
 
 
 
         //send the same data for the 2nd time
         //создаю курьера с той же парой логин - пароль
         Courier courierSecond = new Courier(login, password, "firstname" + login);
-        Response responseSecond = CreateCourierSteps.createCourier(courierSecond);
+        Response responseSecond = createCourierSteps.createCourier(courierSecond);
         //проверяю ответ
-        CreateCourierSteps.checkStatusCode( responseSecond, 409);
-        CreateCourierSteps.checkResponseValue(responseSecond, "message", "Этот логин уже используется");
+        createCourierSteps.checkStatusCode( responseSecond, 409);
+        createCourierSteps.checkResponseValue(responseSecond, "message", "Этот логин уже используется");
 
     }
 }

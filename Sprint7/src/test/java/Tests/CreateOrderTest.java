@@ -1,6 +1,8 @@
 package Tests;
 
 import POJO.Order;
+import jdk.jfr.Description;
+import org.junit.jupiter.api.DisplayName;
 import steps.CreateOrderSteps;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
@@ -15,19 +17,23 @@ import java.util.stream.Stream;
 public class CreateOrderTest {
     Integer orderTrackNumber;
     boolean isOrderCreated = false;
+    CreateOrderSteps createOrderSteps;
     @BeforeEach
     public void setUp() {
+        createOrderSteps = new CreateOrderSteps();
         RestAssured.baseURI = "http://qa-scooter.praktikum-services.ru";
     }
 
     @AfterEach
     public void tearDown() {
         if(orderTrackNumber!=0 && isOrderCreated) {
-            CreateOrderSteps.cancelOrderAfterSuccessCreation(orderTrackNumber);
+           createOrderSteps.cancelOrderAfterSuccessCreation(orderTrackNumber);
         }
     }
     @ParameterizedTest
     @MethodSource("testData")
+    @DisplayName("Check that order successfully added")
+    @Description("Check that order is added with different data")
     void checkSuccessOrderCreation(String firstName, String lastName,
                                    String address, String metroStation,
                                    String phone, int rentTime,
@@ -35,15 +41,15 @@ public class CreateOrderTest {
                                    List<String> color){
         Order order = new Order(firstName, lastName, address, metroStation, phone, rentTime, deliveryDate, comment, color);
         //проверю что поля в объекте создались нормально
-        CreateOrderSteps.validateOrderFields(order, firstName, lastName, address, metroStation, phone, rentTime, deliveryDate, comment, color);
+        createOrderSteps.validateOrderFields(order, firstName, lastName, address, metroStation, phone, rentTime, deliveryDate, comment, color);
         //отправлю запрос
-        Response response = CreateOrderSteps.sendPostRequestToCreateOrder(order);
+        Response response = createOrderSteps.sendPostRequestToCreateOrder(order);
         //проверим код сообщения
-        CreateOrderSteps.checkStatusCode(response, 201);
+        createOrderSteps.checkStatusCode(response, 201);
         //проверим тело сообщения, что возвращает track
-        CreateOrderSteps.checkTrackExists(response);
+        createOrderSteps.checkTrackExists(response);
         //получим track number
-        orderTrackNumber = CreateOrderSteps.getOrderTrackAfterSuccessAddition(response);
+        orderTrackNumber = createOrderSteps.getOrderTrackAfterSuccessAddition(response);
         isOrderCreated = true;
 
     }

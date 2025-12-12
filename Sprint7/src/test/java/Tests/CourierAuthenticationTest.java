@@ -19,17 +19,18 @@ public class CourierAuthenticationTest {
     private int courierId;
     private String login;
     private String password;
-
+    CreateCourierSteps createCourierSteps;
 
 
     @BeforeEach
     public void setUp() {
+        createCourierSteps = new CreateCourierSteps ();
         RestAssured.baseURI = "http://qa-scooter.praktikum-services.ru";
         //сгенерируем логин и пароль
         login = DataGenerator.generateCourierLogin();
         password = DataGenerator.generateCourierPassword();
         //создадим курьера
-        CreateCourierSteps.addCourierReturnsSuccessResponse(login, password);
+        createCourierSteps.addCourierReturnsSuccessResponse(login, password);
         isCourierCreated=true;
     }
 
@@ -37,7 +38,7 @@ public class CourierAuthenticationTest {
     @AfterEach
     public void deleteCourier() {
         if (courierId != 0 && isCourierCreated) {
-            CreateCourierSteps.deleteCourierById(courierId);
+            createCourierSteps.deleteCourierById(courierId);
         }
     }
 
@@ -48,11 +49,11 @@ public class CourierAuthenticationTest {
 
         CourierCredentials courierCredentials = new CourierCredentials(login, password);
         //получим респонс после логина
-        Response response = CreateCourierSteps.loginWithLoginAndPassword(courierCredentials);
+        Response response = createCourierSteps.loginWithLoginAndPassword(courierCredentials);
         //сравним статус код
-        CreateCourierSteps.checkStatusCode(response, 200);
+        createCourierSteps.checkStatusCode(response, 200);
         //вытянем courierID
-        courierId = CreateCourierSteps.getCourierIdAfterSuccessLogin(response);
+        courierId = createCourierSteps.getCourierIdAfterSuccessLogin(response);
         isCourierCreated = true;
         assertNotNull(courierId, "ID не должен быть NULL");
         assertTrue(courierId > 0, "Id должен быть больше 0");
@@ -61,44 +62,44 @@ public class CourierAuthenticationTest {
 
 
     @Test
-    @DisplayName("Login with invalid password")
+    @DisplayName("Authentication with invalid password")
     public void loginWithWrongPasswordReturnsNotFoundError() {
 
         //залогинемся с валидными данными чтобы получить id
         //preconditions
         CourierCredentials courierCredentials = new CourierCredentials(login, password);
         //получим респонс после попытки логина
-        Response response = CreateCourierSteps.loginWithLoginAndPassword(courierCredentials);
+        Response response = createCourierSteps.loginWithLoginAndPassword(courierCredentials);
         //получим id
-        courierId = CreateCourierSteps.getCourierIdAfterSuccessLogin(response);
+        courierId = createCourierSteps.getCourierIdAfterSuccessLogin(response);
 
         //Сам тест
         //сгенерируем новый пароль
         String wrongPassword = DataGenerator.generateCourierPassword();
         //залогинемся с неправильным паролем
         CourierCredentials courierCredentialsWrong = new CourierCredentials(login, wrongPassword);
-        Response responseAfterLogin = CreateCourierSteps.loginWithLoginAndPassword(courierCredentialsWrong);
-        CreateCourierSteps.checkStatusCode(responseAfterLogin,404);
-        CreateCourierSteps.checkResponseValue(responseAfterLogin, "message", "Учетная запись не найдена");
+        Response responseAfterLogin = createCourierSteps.loginWithLoginAndPassword(courierCredentialsWrong);
+        createCourierSteps.checkStatusCode(responseAfterLogin,404);
+        createCourierSteps.checkResponseValue(responseAfterLogin, "message", "Учетная запись не найдена");
 
     }
 
     @Test
-    @DisplayName("Login without password")
+    @DisplayName("Authentication without password")
     public void loginWithoutPasswordReturnsBadRequestError() {
         //preconditions
         //залогинемся чтобы получить верный id
         CourierCredentials courierCredentials = new CourierCredentials(login, password);
         //получим респонс
-        Response response = CreateCourierSteps.loginWithLoginAndPassword(courierCredentials);
+        Response response = createCourierSteps.loginWithLoginAndPassword(courierCredentials);
         //получим id
-        courierId = CreateCourierSteps.getCourierIdAfterSuccessLogin(response);
+        courierId = createCourierSteps.getCourierIdAfterSuccessLogin(response);
         //сам тест
         //login without  password
         CourierCredentials courierCredentialsNoPassword = new CourierCredentials(login, null);
-        Response responseAfterLogin = CreateCourierSteps.loginWithLoginAndPassword(courierCredentialsNoPassword);
-        CreateCourierSteps.checkStatusCode(responseAfterLogin,400);
-        CreateCourierSteps.checkResponseValue(responseAfterLogin, "message", "Недостаточно данных для входа");
+        Response responseAfterLogin = createCourierSteps.loginWithLoginAndPassword(courierCredentialsNoPassword);
+        createCourierSteps.checkStatusCode(responseAfterLogin,400);
+        createCourierSteps.checkResponseValue(responseAfterLogin, "message", "Недостаточно данных для входа");
 
     }
 

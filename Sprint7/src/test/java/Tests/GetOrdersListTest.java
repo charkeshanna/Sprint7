@@ -3,6 +3,7 @@ import POJO.OrderResponse;
 import POJO.OrdersListResponse;
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
@@ -17,6 +18,7 @@ public class GetOrdersListTest {
     }
 
     @Test
+    @DisplayName("Check that sending GET request to /api/v1/orders return orders list")
     public  void getOrdersList() {
         //так как задание не было четко сформулировано, я решила сделать только основной тест, что отправление
         //запроса возвращает список

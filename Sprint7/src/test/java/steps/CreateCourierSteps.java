@@ -11,8 +11,8 @@ import static io.restassured.RestAssured.given;
 public class CreateCourierSteps {
 
 
-    @Step("Создаем курьера, отправляя запрос")
-    public static Response createCourier(Courier courier) {
+    @Step("Sending POST request to /api/v1/courier")
+    public Response createCourier(Courier courier) {
 
         return given()
                 .header("Content-type", "application/json")
@@ -21,20 +21,20 @@ public class CreateCourierSteps {
                 .post("/api/v1/courier");
     }
 
-    @Step("Проверяем статус код = {expectedCode} полученного ответа")
-    public static void checkStatusCode(Response response, int expectedCode) {
+    @Step("Check status code {expectedCode} of the response")
+    public  void checkStatusCode(Response response, int expectedCode) {
         int actualCode = response.getStatusCode();
         assertEquals(expectedCode, actualCode, "Статус-код не совпадает!");
     }
 
-    @Step("Проверяем тело сообщения {expectedValue} полученного ответа")
-    public static void checkResponseValue(Response response, String key, Object expectedValue) {
+    @Step("Check message body of the response {expectedValue}")
+    public  void checkResponseValue(Response response, String key, Object expectedValue) {
         Object actualValue = response.jsonPath().get(key);
         assertEquals(expectedValue, actualValue, "Значение по ключу '" + key + "' не совпадает");
     }
 
-    @Step("Логинимся и получаем courierID")
-    public static int getCourierIDafterSuccessLogin(CourierCredentials courierCredentials) {
+    @Step("Login as a courier and get courierID")
+    public  int getCourierIDafterSuccessLogin(CourierCredentials courierCredentials) {
         return given()
                 .header("Content-type", "application/json")
                 .body(courierCredentials)
@@ -47,9 +47,9 @@ public class CreateCourierSteps {
     }
 
 
-    //попробую разделить шаги пост запрос с логином и валидация ответа
-    @Step("Логин в систему без обработки ответа")
-    public static Response loginWithLoginAndPassword(CourierCredentials courierCredentials) {
+
+    @Step("Login as courier (without checking the response)")
+    public  Response loginWithLoginAndPassword(CourierCredentials courierCredentials) {
         return given()
                 .header("Content-type", "application/json")
                 .body(courierCredentials)
@@ -57,13 +57,13 @@ public class CreateCourierSteps {
                 .post("/api/v1/courier/login");
     }
 
-    @Step("Получаем id после успешного логина (обработка ответа)")
-    public static Integer getCourierIdAfterSuccessLogin(Response response) {
+    @Step("Get id after successful login")
+    public  Integer getCourierIdAfterSuccessLogin(Response response) {
         return response.path("id");
     }
 
-    @Step("Удаляем курьера по courierId {id}")
-    public static void deleteCourierById(int id) {
+    @Step("Remove courier using courierId {id}")
+    public  void deleteCourierById(int id) {
         given()
                 .header("Content-type", "application/json")
                 .when()
@@ -72,8 +72,8 @@ public class CreateCourierSteps {
                 .statusCode(200);
 
     }
-    @Step("Успешное добавление курьера (без получения айди)")
-    public static Response addCourierReturnsSuccessResponse(String login, String password) {
+    @Step("Add courier (without processing id)")
+    public  Response addCourierReturnsSuccessResponse(String login, String password) {
         Courier courier = new Courier(login, password, null);
         Response response = createCourier(courier);
         checkStatusCode(response, 201);
