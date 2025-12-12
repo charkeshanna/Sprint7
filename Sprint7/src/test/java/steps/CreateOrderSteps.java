@@ -1,4 +1,4 @@
-package Steps;
+package steps;
 
 import POJO.Order;
 import io.qameta.allure.Step;
@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class CreateOrderSteps {
 
     //проверим правильно создание объекта
-    @Step("проверим правильно создание объекта")
+    @Step("Проверяем правильное создание объекта")
     public static void validateOrderFields(Order order,
                                            String firstName, String lastName,
                                            String address, String metroStation,
@@ -29,7 +29,7 @@ public class CreateOrderSteps {
         assertEquals(comment, order.getComment());
         assertEquals(color, order.getColor());
     }
-    @Step("Отправим запрос на создание заказа")
+    @Step("Отправление запрос на создание заказа")
     public static Response sendPostRequestToCreateOrder(Order order) {
         return given()
                 .header("Content-type", "application/json")
@@ -37,26 +37,26 @@ public class CreateOrderSteps {
                 .when()
                 .post("/api/v1/orders");
     }
-    @Step("Проверим код сообщения response - {expectedCode}")
+    @Step("Проверяем код сообщения response - {expectedCode}")
     public static void checkStatusCode(Response response, int expectedCode) {
         int actualCode = response.getStatusCode();
         assertEquals(expectedCode, actualCode, "Статус-код не совпадает!");
     }
-    @Step("Проверим наличие track number")
+    @Step("Проверяем наличие track number")
     public static void checkTrackExists(Response response) {
         Integer track = response.jsonPath().getInt("track"); // получаем как Integer
         assertNotNull(track, "Track отсутствует в ответе"); // проверяем, что поле есть
         assertTrue(track > 0, "Track должен быть положительным числом"); // опционально, что число > 0
     }
 
-    @Step("Получим track number")
+    @Step("Получаем track number")
     public static Integer getOrderTrackAfterSuccessAddition(Response response) {
         return response.path("track");
     }
 
     //так как сейчас нет цели проверять нормальную работу отмены заказа, в более подробные проверки
     //здесь я не лезу
-    @Step("отменим заказ после создания")
+    @Step("Отменяем заказ после создания")
     public static void cancelOrderAfterSuccessCreation(int track) {
         given()
                 .header("Content-type", "application/json")

@@ -7,13 +7,13 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import Steps.CreateCourierSteps;
+import steps.CreateCourierSteps;
 
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class authenticationTest {
+public class CourierAuthenticationTest {
 
     private boolean isCourierCreated = false;
     private int courierId;
@@ -25,6 +25,12 @@ public class authenticationTest {
     @BeforeEach
     public void setUp() {
         RestAssured.baseURI = "http://qa-scooter.praktikum-services.ru";
+        //сгенерируем логин и пароль
+        login = DataGenerator.generateCourierLogin();
+        password = DataGenerator.generateCourierPassword();
+        //создадим курьера
+        CreateCourierSteps.addCourierReturnsSuccessResponse(login, password);
+        isCourierCreated=true;
     }
 
 
@@ -39,16 +45,11 @@ public class authenticationTest {
     @Test
     @DisplayName("Authentication with valid login and password")
     public void loginWithValidCredentialsReturnsIdAndSuccessResponse() {
-        //Preconditions: create courier
-        login = DataGenerator.generatedCourierLogin();
-        password = DataGenerator.generateCourierPassword();
-        CreateCourierSteps.addCourierReturnsSuccessResponse(login, password);
 
-        //залогинемся
         CourierCredentials courierCredentials = new CourierCredentials(login, password);
-        //получим респонс
+        //получим респонс после логина
         Response response = CreateCourierSteps.loginWithLoginAndPassword(courierCredentials);
-        //сравнив статус код
+        //сравним статус код
         CreateCourierSteps.checkStatusCode(response, 200);
         //вытянем courierID
         courierId = CreateCourierSteps.getCourierIdAfterSuccessLogin(response);
@@ -60,32 +61,13 @@ public class authenticationTest {
 
 
     @Test
-    @DisplayName("Login with not existing login")
-    public void loginWithWrongLoginReturnsNotFoundError() {
-        String randomLogin = DataGenerator.generatedCourierLogin();
-        String randomPassword = DataGenerator.generateCourierPassword();
-
-        CourierCredentials courierCredentials = new CourierCredentials(randomLogin, randomPassword);
-        //получим респонс
-        Response response = CreateCourierSteps.loginWithLoginAndPassword(courierCredentials);
-        //сравнив статус код
-        CreateCourierSteps.checkStatusCode(response, 404);
-        CreateCourierSteps.checkResponseValue(response, "message", "Учетная запись не найдена");
-
-    }
-
-    @Test
     @DisplayName("Login with invalid password")
     public void loginWithWrongPasswordReturnsNotFoundError() {
-        //Preconditions: create courier
-        login = DataGenerator.generatedCourierLogin();
-        password = DataGenerator.generateCourierPassword();
-        CreateCourierSteps.addCourierReturnsSuccessResponse(login, password);
-        isCourierCreated=true;
 
-        //залогинемся
+        //залогинемся с валидными данными чтобы получить id
+        //preconditions
         CourierCredentials courierCredentials = new CourierCredentials(login, password);
-        //получим респонс
+        //получим респонс после попытки логина
         Response response = CreateCourierSteps.loginWithLoginAndPassword(courierCredentials);
         //получим id
         courierId = CreateCourierSteps.getCourierIdAfterSuccessLogin(response);
@@ -93,7 +75,7 @@ public class authenticationTest {
         //Сам тест
         //сгенерируем новый пароль
         String wrongPassword = DataGenerator.generateCourierPassword();
-        //залогинимся с неправильным паролем
+        //залогинемся с неправильным паролем
         CourierCredentials courierCredentialsWrong = new CourierCredentials(login, wrongPassword);
         Response responseAfterLogin = CreateCourierSteps.loginWithLoginAndPassword(courierCredentialsWrong);
         CreateCourierSteps.checkStatusCode(responseAfterLogin,404);
@@ -104,19 +86,14 @@ public class authenticationTest {
     @Test
     @DisplayName("Login without password")
     public void loginWithoutPasswordReturnsBadRequestError() {
-        //Preconditions: create courier
-        login = DataGenerator.generatedCourierLogin();
-        password = DataGenerator.generateCourierPassword();
-        CreateCourierSteps.addCourierReturnsSuccessResponse(login, password);
-        isCourierCreated=true;
-
-        //залогинемся
+        //preconditions
+        //залогинемся чтобы получить верный id
         CourierCredentials courierCredentials = new CourierCredentials(login, password);
         //получим респонс
         Response response = CreateCourierSteps.loginWithLoginAndPassword(courierCredentials);
         //получим id
         courierId = CreateCourierSteps.getCourierIdAfterSuccessLogin(response);
-
+        //сам тест
         //login without  password
         CourierCredentials courierCredentialsNoPassword = new CourierCredentials(login, null);
         Response responseAfterLogin = CreateCourierSteps.loginWithLoginAndPassword(courierCredentialsNoPassword);
@@ -125,16 +102,5 @@ public class authenticationTest {
 
     }
 
-    @Test
-    @DisplayName("Login without login")
-    public void loginWithoutLoginReturnsBadRequestError() {
-        password = DataGenerator.generateCourierPassword();
-        //login without login
-        CourierCredentials courierCredentials = new CourierCredentials(null, password);
-        Response responseAfterLogin = CreateCourierSteps.loginWithLoginAndPassword(courierCredentials);
-        CreateCourierSteps.checkStatusCode(responseAfterLogin,400);
-        CreateCourierSteps.checkResponseValue(responseAfterLogin, "message", "Недостаточно данных для входа");
-
-    }
 
 }

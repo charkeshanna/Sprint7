@@ -1,7 +1,7 @@
 package Tests;
 
 import POJO.Order;
-import Steps.CreateOrderSteps;
+import steps.CreateOrderSteps;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.AfterEach;

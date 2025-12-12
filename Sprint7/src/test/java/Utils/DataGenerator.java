@@ -1,7 +1,7 @@
 package Utils;
 
 public class DataGenerator {
-    public static String generatedCourierLogin() {
+    public static String generateCourierLogin() {
         return "login_" + System.currentTimeMillis();
     }
 

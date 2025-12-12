@@ -1,10 +1,7 @@
 package Tests;
-
-import POJO.Order;
 import POJO.OrderResponse;
 import POJO.OrdersListResponse;
 import io.restassured.RestAssured;
-import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -21,6 +18,8 @@ public class GetOrdersListTest {
 
     @Test
     public  void getOrdersList() {
+        //так как задание не было четко сформулировано, я решила сделать только основной тест, что отправление
+        //запроса возвращает список
         OrdersListResponse ordersListResponse = given()
                 .header("Content-type", "application/json")
                 .get("/api/v1/orders")
@@ -31,24 +30,6 @@ public class GetOrdersListTest {
         assertTrue(firstOrder.getId() > 0, "ID заказа неправильный");
         assertNotNull(firstOrder.getStatus(), "Статус заказа отсутствует");
 
-
-
-
-
-
-
-/*
-            Response response = given()
-                .get("/api/v1/orders");
-            response.then()
-                    //.log()
-                    //.all()
-                    .statusCode(200);
-            OrdersListResponse ordersList = response.then().extract().as(OrdersListResponse.class);
-            assert(ordersList.getOrders().size() > 0);
-        System.out.println("=== POJO OBJECT ===");
-        System.out.println(ordersList.toString());
-        */
 
     }
 }
