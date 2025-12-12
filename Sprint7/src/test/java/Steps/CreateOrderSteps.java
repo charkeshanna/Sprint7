@@ -10,7 +10,7 @@ import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class CreateOrderSteps {
-    Order order;
+
     //проверим правильно создание объекта
     @Step("проверим правильно создание объекта")
     public static void validateOrderFields(Order order,
@@ -54,6 +54,8 @@ public class CreateOrderSteps {
         return response.path("track");
     }
 
+    //так как сейчас нет цели проверять нормальную работу отмены заказа, в более подробные проверки
+    //здесь я не лезу
     @Step("отменим заказ после создания")
     public static void cancelOrderAfterSuccessCreation(int track) {
         given()
