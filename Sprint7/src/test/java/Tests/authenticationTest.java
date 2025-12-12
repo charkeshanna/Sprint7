@@ -1,6 +1,4 @@
 package Tests;
-
-import POJO.Courier;
 import POJO.CourierCredentials;
 import Utils.DataGenerator;
 import io.restassured.RestAssured;
