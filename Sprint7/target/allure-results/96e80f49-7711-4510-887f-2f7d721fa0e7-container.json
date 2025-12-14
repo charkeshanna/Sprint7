@@ -1,1 +1,0 @@
-{"uuid":"96e80f49-7711-4510-887f-2f7d721fa0e7","name":"Check that sending GET request to /api/v1/orders return orders list","children":["a31c838c-7912-43c6-b9e1-93542e77c58f"],"befores":[],"afters":[],"start":1765555750588,"stop":1765555760862}
