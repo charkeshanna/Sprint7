@@ -34,6 +34,12 @@
             <version>2.29.1</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.30</version> <!-- последняя версия -->
+            <scope>provided</scope>
+        </dependency>
 
 
         <!-- JUnit -->
