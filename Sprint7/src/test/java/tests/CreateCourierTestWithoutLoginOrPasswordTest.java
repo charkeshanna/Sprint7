@@ -1,8 +1,7 @@
-package Tests;
+package tests;
 
-import POJO.Courier;
-import Utils.DataGenerator;
-import io.qameta.allure.Step;
+import pojo.Courier;
+import utils.DataGenerator;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeEach;

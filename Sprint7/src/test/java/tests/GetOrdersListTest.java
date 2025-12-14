@@ -1,6 +1,6 @@
-package Tests;
-import POJO.OrderResponse;
-import POJO.OrdersListResponse;
+package tests;
+import pojo.OrderResponse;
+import pojo.OrdersListResponse;
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

@@ -1,7 +1,7 @@
 package steps;
 
-import POJO.Courier;
-import POJO.CourierCredentials;
+import pojo.Courier;
+import pojo.CourierCredentials;
 import io.qameta.allure.Step;
 import io.restassured.response.Response;
 import static org.junit.jupiter.api.Assertions.assertEquals;

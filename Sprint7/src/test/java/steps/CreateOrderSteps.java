@@ -1,6 +1,6 @@
 package steps;
 
-import POJO.Order;
+import pojo.Order;
 import io.qameta.allure.Step;
 import io.restassured.response.Response;
 

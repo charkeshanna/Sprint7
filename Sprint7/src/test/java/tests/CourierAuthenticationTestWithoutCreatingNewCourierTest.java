@@ -1,7 +1,7 @@
-package Tests;
+package tests;
 
-import POJO.CourierCredentials;
-import Utils.DataGenerator;
+import pojo.CourierCredentials;
+import utils.DataGenerator;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeEach;

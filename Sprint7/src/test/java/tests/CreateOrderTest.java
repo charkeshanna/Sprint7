@@ -1,6 +1,6 @@
-package Tests;
+package tests;
 
-import POJO.Order;
+import pojo.Order;
 import jdk.jfr.Description;
 import org.junit.jupiter.api.DisplayName;
 import steps.CreateOrderSteps;

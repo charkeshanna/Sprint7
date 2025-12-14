@@ -1,11 +1,10 @@
-package Tests;
-import POJO.CourierCredentials;
+package tests;
+import pojo.CourierCredentials;
 import steps.CreateCourierSteps;
-import POJO.Courier;
-import Utils.DataGenerator;
+import pojo.Courier;
+import utils.DataGenerator;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
-import jdk.jfr.Description;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
