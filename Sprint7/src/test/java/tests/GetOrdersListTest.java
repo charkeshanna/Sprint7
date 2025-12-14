@@ -10,12 +10,9 @@ import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class GetOrdersListTest {
+public class GetOrdersListTest extends BaseTest{
 
-    @BeforeEach
-    public void setUp() {
-        RestAssured.baseURI = "http://qa-scooter.praktikum-services.ru";
-    }
+
 
     @Test
     @DisplayName("Check that sending GET request to /api/v1/orders return orders list")

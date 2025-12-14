@@ -11,7 +11,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 
-public class CreateCourierTest {
+public class CreateCourierTest extends BaseTest{
 
     private String login;
     private String password;
@@ -20,7 +20,6 @@ public class CreateCourierTest {
     @BeforeEach
     public void setUp() {
         createCourierSteps = new CreateCourierSteps();
-        RestAssured.baseURI = "http://qa-scooter.praktikum-services.ru";
     }
 
 

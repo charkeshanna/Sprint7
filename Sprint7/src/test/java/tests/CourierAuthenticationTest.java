@@ -13,7 +13,7 @@ import steps.CreateCourierSteps;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class CourierAuthenticationTest {
+public class CourierAuthenticationTest extends BaseTest {
 
     private boolean isCourierCreated = false;
     private int courierId;
@@ -25,7 +25,6 @@ public class CourierAuthenticationTest {
     @BeforeEach
     public void setUp() {
         createCourierSteps = new CreateCourierSteps ();
-        RestAssured.baseURI = "http://qa-scooter.praktikum-services.ru";
         //сгенерируем логин и пароль
         login = DataGenerator.generateCourierLogin();
         password = DataGenerator.generateCourierPassword();

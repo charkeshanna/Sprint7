@@ -14,14 +14,13 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.util.List;
 import java.util.stream.Stream;
 
-public class CreateOrderTest {
+public class CreateOrderTest extends BaseTest{
     Integer orderTrackNumber;
     boolean isOrderCreated = false;
     CreateOrderSteps createOrderSteps;
     @BeforeEach
     public void setUp() {
         createOrderSteps = new CreateOrderSteps();
-        RestAssured.baseURI = "http://qa-scooter.praktikum-services.ru";
     }
 
     @AfterEach

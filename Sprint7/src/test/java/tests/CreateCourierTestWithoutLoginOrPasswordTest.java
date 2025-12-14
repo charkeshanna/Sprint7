@@ -9,14 +9,13 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import steps.CreateCourierSteps;
 
-public class CreateCourierTestWithoutLoginOrPasswordTest {
+public class CreateCourierTestWithoutLoginOrPasswordTest extends BaseTest{
     private String login;
     private String password;
     CreateCourierSteps createCourierSteps;
     @BeforeEach
     public void setUp() {
         createCourierSteps = new CreateCourierSteps();
-        RestAssured.baseURI = "http://qa-scooter.praktikum-services.ru";
     }
 
 
