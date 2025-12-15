@@ -1,11 +1,16 @@
 package utils;
+import com.github.javafaker.Faker;
+
 
 public class DataGenerator {
+    private static final Faker faker = new Faker();
+
     public static String generateCourierLogin() {
-        return "login_" + System.currentTimeMillis();
+        return faker.name().username();
     }
 
     public static String generateCourierPassword() {
-        return "password" + (int)(Math.random() * 10000);
+        return faker.internet().password(8, 12);
     }
+
 }
